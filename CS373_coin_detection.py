@@ -66,7 +66,20 @@ def createInitializedGreyscalePixelArray(image_width, image_height, initValue = 
 ### You can add your own functions here ###
 ###########################################
 
-
+def computeRGBToGreyscale(pixel_array_r, pixel_array_g, pixel_array_b, image_width, image_height):
+    greyscale_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    for row in range(image_height):
+        for col in range(image_width):
+            r = pixel_array_r[row][col]
+            g = pixel_array_g[row][col]
+            b = pixel_array_b[row][col]
+            
+            grey = round(0.3 * r + 6 * g + 0.1 * b)
+            
+            greyscale_pixel_array[row][col] = grey
+    
+    return greyscale_pixel_array
 
 
 
@@ -91,21 +104,12 @@ def main(input_path, output_path):
     ###################################
     
     # Create a greyscale image using the provided channel ratios and rounding
-    greyscale_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
-    for row in range(image_height):
-        for col in range(image_width):
-            r = px_array_r[row][col]
-            g = px_array_g[row][col]
-            b = px_array_b[row][col]
-            
-            grey = round(0.3 * r + 6 * g + 0.1 * b)
-            
-            greyscale_pixel_array[row][col] = grey
+    iniGreyscaleArray = computeRGBToGreyscale(px_array_r, px_array_g, px_array_b, image_width, image_height)
 
     
     
     
-    
+    outputArray = iniGreyscaleArray
     
     ############################################
     ### Bounding box coordinates information ###
@@ -116,7 +120,7 @@ def main(input_path, output_path):
     ############################################
     
     bounding_box_list = [[150, 140, 200, 190]]  # This is a dummy bounding box list, please comment it out when testing your own code.
-    px_array = greyscale_pixel_array
+    px_array = outputArray
     
     fig, axs = pyplot.subplots(1, 1)
     axs.imshow(px_array, aspect='equal')
