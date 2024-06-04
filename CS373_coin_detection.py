@@ -66,6 +66,7 @@ def createInitializedGreyscalePixelArray(image_width, image_height, initValue = 
 ### You can add your own functions here ###
 ###########################################
 
+# ——————————————————————————————————————————————— - —————————————————————————————————————————————— #
 def computeRGBToGreyscale(pixel_array_r, pixel_array_g, pixel_array_b, image_width, image_height):
     greyscale_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
     
@@ -75,12 +76,43 @@ def computeRGBToGreyscale(pixel_array_r, pixel_array_g, pixel_array_b, image_wid
             g = pixel_array_g[row][col]
             b = pixel_array_b[row][col]
             
-            grey = round(0.3 * r + 6 * g + 0.1 * b)
+            grey = round(0.3 * r + 0.6 * g + 0.1 * b)
             
             greyscale_pixel_array[row][col] = grey
     
     return greyscale_pixel_array
 
+# ——————————————————————————————————————————————— - —————————————————————————————————————————————— #
+
+def computeMinAndMaxValues(pixel_array):
+    min_value = float('inf')
+    max_value = float('-inf')
+    
+    for row in pixel_array:
+        for value in row:
+            if value < min_value:
+                min_value = value
+            if value > max_value:
+                max_value = value
+                
+    return min_value, max_value
+    
+# ——————————————————————————————————————————————— - —————————————————————————————————————————————— #
+
+def computeCumulativeHistogram(pixel_array, nr_bins):
+    histogram = [0] * nr_bins
+    
+    for row in pixel_array:
+        for pixel in row:
+            histogram[pixel] += 1
+    
+    cumulative_histogram = [0] * nr_bins
+    cumulative_sum = 0
+    for i in range(nr_bins):
+        cumulative_sum += histogram[i]
+        cumulative_histogram[i] = cumulative_sum
+    
+    return cumulative_histogram
 
 
 
@@ -105,9 +137,12 @@ def main(input_path, output_path):
     
     # Create a greyscale image using the provided channel ratios and rounding
     iniGreyscaleArray = computeRGBToGreyscale(px_array_r, px_array_g, px_array_b, image_width, image_height)
-
+    
+    computeCumulativeHistogram(iniGreyscaleArray, 256)
     
     
+    
+    print(computeMinAndMaxValues(iniGreyscaleArray))
     
     outputArray = iniGreyscaleArray
     
