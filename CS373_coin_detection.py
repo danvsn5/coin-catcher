@@ -371,8 +371,15 @@ def main(input_path, output_path):
         bbox_xy = (bbox_min_x, bbox_min_y)
         bbox_width = bbox_max_x - bbox_min_x
         bbox_height = bbox_max_y - bbox_min_y
-        rect = Rectangle(bbox_xy, bbox_width, bbox_height, linewidth=2, edgecolor='r', facecolor='none')
-        axs.add_patch(rect)
+        
+        print(bbox_width)
+        print(bbox_height)
+        
+        if(bbox_width > 0.95 * bbox_height and bbox_width < 1.05 * bbox_height):
+            
+            if(bbox_height > 100):
+                rect = Rectangle(bbox_xy, bbox_width, bbox_height, linewidth=2, edgecolor='r', facecolor='none')
+                axs.add_patch(rect)
         
     pyplot.axis('off')
     pyplot.tight_layout()
