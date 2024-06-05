@@ -82,22 +82,24 @@ def computeRGBToGreyscale(pixel_array_r, pixel_array_g, pixel_array_b, image_wid
     
     return greyscale_pixel_array
 
+
 # ——————————————————————————————————————————————— - —————————————————————————————————————————————— #
 
-def computeMinAndMaxValues(pixel_array):
-    min_value = float('inf')
-    max_value = float('-inf')
+def computeMinMax(greyscale_pixel_array, image_width, image_height):
+    min_value = 255
+    max_value = 0
     
-    for row in pixel_array:
-        for value in row:
-            if value < min_value:
-                min_value = value
-            if value > max_value:
-                max_value = value
-                
+    for row in range(image_height):
+        for col in range(image_width):
+            pixel_value = greyscale_pixel_array[row][col]
+            if pixel_value < min_value:
+                min_value = pixel_value
+            if pixel_value > max_value:
+                max_value = pixel_value
+
     return min_value, max_value
     
-# ——————————————————————————————————————————————— - —————————————————————————————————————————————— #
+# —————————————————————————————————————— Contrast Stretching ————————————————————————————————————— #
 
 def computeCumulativeHistogram(pixel_array, nr_bins):
     histogram = [0] * nr_bins
@@ -113,6 +115,53 @@ def computeCumulativeHistogram(pixel_array, nr_bins):
         cumulative_histogram[i] = cumulative_sum
     
     return cumulative_histogram
+
+def contrastStretching(greyscale_pixel_array, image_width, image_height):
+   
+    # compute the cumulative histogram for the input greyscale image
+    nr_bins = 256
+    cumulative_histogram = computeCumulativeHistogram(greyscale_pixel_array, nr_bins)
+    
+    # determine the 5th and 95th percentile pixel values
+    total_pixels = image_width * image_height
+    lower_percentile = 0.05
+    upper_percentile = 0.95
+    
+    lower_pixel_value = 0
+    upper_pixel_value = 255
+    
+    lower_threshold = lower_percentile * total_pixels
+    upper_threshold = upper_percentile * total_pixels
+    
+    for i in range(nr_bins):
+        if cumulative_histogram[i] >= lower_threshold:
+            lower_pixel_value = i
+            break
+    
+    for i in range(nr_bins - 1, -1, -1):
+        if cumulative_histogram[i] <= upper_threshold:
+            upper_pixel_value = i
+            break
+    
+    print("lower pixel value: ", lower_pixel_value)
+    print("upper pixel value: ", upper_pixel_value)
+    
+    # create a new greyscale image with the stretched pixel values
+    stretched_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    for row in range(image_height):
+        for col in range(image_width):
+            pixel_value = greyscale_pixel_array[row][col]
+            if pixel_value < lower_pixel_value:
+                pixel_value = 0
+            elif pixel_value > upper_pixel_value:
+                pixel_value = 255
+            else:
+                pixel_value = math.floor((pixel_value - lower_pixel_value) * 255 / (upper_pixel_value - lower_pixel_value))
+            
+            stretched_pixel_array[row][col] = pixel_value
+    
+    return stretched_pixel_array
 
 
 
@@ -137,15 +186,11 @@ def main(input_path, output_path):
     
     # Create a greyscale image using the provided channel ratios and rounding
     iniGreyscaleArray = computeRGBToGreyscale(px_array_r, px_array_g, px_array_b, image_width, image_height)
+               
+               
+    outputArray = contrastStretching(iniGreyscaleArray, image_width, image_height)
     
-    computeCumulativeHistogram(iniGreyscaleArray, 256)
-    
-    
-    
-    print(computeMinAndMaxValues(iniGreyscaleArray))
-    
-    outputArray = iniGreyscaleArray
-    
+        
     ############################################
     ### Bounding box coordinates information ###
     ### bounding_box[0] = min x
