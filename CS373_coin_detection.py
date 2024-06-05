@@ -162,20 +162,27 @@ def contrastStretching(greyscale_pixel_array, image_width, image_height):
 
 # —————————————————— Edge Detection with Horizontal and Vertical Scharr Kernals —————————————————— #
 def edgeDetection(greyscale_pixel_array, image_width, image_height):
-    edge_strength_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    # Reshape the 1D array into a 2D array
     
-    for row in range(1, image_height - 1):
-        for col in range(1, image_width - 1):
-            horizontal_strength = 3 * greyscale_pixel_array[row - 1][col - 1] + 10 * greyscale_pixel_array[row][col - 1] + 3 * greyscale_pixel_array[row + 1][col - 1] - 3 * greyscale_pixel_array[row - 1][col + 1] - 10 * greyscale_pixel_array[row][col + 1] - 3 * greyscale_pixel_array[row + 1][col + 1]
-            vertical_strength = 3 * greyscale_pixel_array[row - 1][col - 1] + 10 * greyscale_pixel_array[row - 1][col] + 3 * greyscale_pixel_array[row - 1][col + 1] - 3 * greyscale_pixel_array[row + 1][col - 1] - 10 * greyscale_pixel_array[row + 1][col] - 3 * greyscale_pixel_array[row + 1][col + 1]
-            
-            horizontal_strength = horizontal_strength / 32
-            vertical_strength = vertical_strength / 32            
-            edge_strength = abs(horizontal_strength) + abs(vertical_strength)
-            edge_strength = max(0, min(255, edge_strength))  # Ensure edge_strength is between 0 and 255
-            edge_strength_array[row][col] = edge_strength
+    # Define the Laplacian kernel
+    laplacian_kernel = [[ 1,  1,  1],
+                        [ 1, -8,  1],
+                        [ 1,  1,  1]]
     
-    return edge_strength_array
+    # Initialize the edges array
+    edges = [[0] * image_width for _ in range(image_height)]
+    
+    # Apply the Laplacian filter using convolution
+    for i in range(1, image_height - 1):
+        for j in range(1, image_width - 1):
+            edge_value = 0
+            for ki in range(-1, 2):
+                for kj in range(-1, 2):
+                    edge_value += greyscale_pixel_array[i + ki][j + kj] * laplacian_kernel[ki + 1][kj + 1]
+            edges[i][j] = min(max(edge_value, 0), 255)  # Clip the result to the range [0, 255]
+    
+    return edges
+
 
 # ——————————————————————————————————— Blurring and Thresholding —————————————————————————————————— #
 def meanFilter(greyscale_pixel_array, image_width, image_height):
@@ -191,7 +198,7 @@ def meanFilter(greyscale_pixel_array, image_width, image_height):
 # perform thresholding on the input greyscale image to create a binary image
 # the threshold value should be set to 22
 def thresholding(greyscale_pixel_array, image_width, image_height):
-    threshold_value = 26
+    threshold_value = 58
     binary_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
     
     for row in range(image_height):
@@ -298,7 +305,7 @@ def connectedComponentAnalysis(binary_pixel_array, image_width, image_height):
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
     # This is the default input image, you may change the 'image_name' variable to test other images.
-    image_name = 'hard_case_2'
+    image_name = 'hard_case_1'
     input_filename = f'./Images/hard/{image_name}.png'
     if TEST_MODE:
         input_filename = input_path
