@@ -304,23 +304,23 @@ def connectedComponentAnalysis(binary_pixel_array, image_width, image_height):
 def findCoinValue(height):
     
     if (height >= 268 * 0.97 and height <= 268 * 1.03):
-        return "$2"
+        return 2
     elif (height >= 231 * 0.97 and height <= 231 * 1.03):
-        return "$1"
+        return 1
     elif (height >= 251 * 0.97 and height <= 251 * 1.03):
-        return "50c"
+        return 0.5
     elif (height >= 215 * 0.97 and height <= 215 * 1.03):
-        return "20c"
+        return 0.2
     elif (height >= 204 * 0.97 and height <= 204 * 1.03):
-        return "10c"
+        return 0.1
     
-    return ""
+    return 0
 
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
     # This is the default input image, you may change the 'image_name' variable to test other images.
-    image_name = 'easy_case_6'
-    input_filename = f'./Images/easy/{image_name}.png'
+    image_name = 'hard_case_3'
+    input_filename = f'./Images/hard/{image_name}.png'
     if TEST_MODE:
         input_filename = input_path
 
@@ -383,6 +383,7 @@ def main(input_path, output_path):
     axs.imshow(px_array, aspect='equal')
     
     coinCount = 0
+    totalValue = 0
     
     # Loop through all bounding boxes
     for bounding_box in bounding_box_list:
@@ -406,16 +407,16 @@ def main(input_path, output_path):
                 x_center = bbox_xy[0] + bbox_width / 2
                 y_center = bbox_xy[1] + bbox_height / 2
                 print(bbox_height)
-                print(findCoinValue(bbox_height))
-                axs.annotate(findCoinValue(bbox_height), (x_center, y_center), color='w', weight='bold', 
+                totalValue = totalValue + findCoinValue(bbox_height)
+                axs.annotate("$" + str(findCoinValue(bbox_height)), (x_center, y_center), color='w', weight='bold', 
                 fontsize=18, ha='center', va='center')
                 print(str(coinCount) + " the coin is width x height   " + str(bbox_width) + "   " + str(bbox_height))
         
         
     if(coinCount == 1):
-        matplotlib.pyplot.text(1, 1, "There is: " + str(coinCount) + " coin in this picture")
+        matplotlib.pyplot.text(1, 1, "There is: " + str(coinCount) + " coin in this picture with a value of $" + str(round(totalValue, 1)))
     else:
-        matplotlib.pyplot.text(1, 1, "There are: " + str(coinCount) + " coins in this picture")
+        matplotlib.pyplot.text(1, 1, "There are: " + str(coinCount) + " coins in this picture with a value of $" + str(round(totalValue, 1)))
 
         
     
