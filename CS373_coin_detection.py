@@ -142,10 +142,7 @@ def contrastStretching(greyscale_pixel_array, image_width, image_height):
         if cumulative_histogram[i] <= upper_threshold:
             upper_pixel_value = i
             break
-    
-    print("lower pixel value: ", lower_pixel_value)
-    print("upper pixel value: ", upper_pixel_value)
-    
+        
     # create a new greyscale image with the stretched pixel values
     stretched_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
     
@@ -163,7 +160,22 @@ def contrastStretching(greyscale_pixel_array, image_width, image_height):
     
     return stretched_pixel_array
 
-
+# —————————————————— Edge Detection with Horizontal and Vertical Scharr Kernals —————————————————— #
+def edgeDetection(greyscale_pixel_array, image_width, image_height):
+    edge_strength_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    for row in range(1, image_height - 1):
+        for col in range(1, image_width - 1):
+            horizontal_strength = 3 * greyscale_pixel_array[row - 1][col - 1] + 10 * greyscale_pixel_array[row][col - 1] + 3 * greyscale_pixel_array[row + 1][col - 1] - 3 * greyscale_pixel_array[row - 1][col + 1] - 10 * greyscale_pixel_array[row][col + 1] - 3 * greyscale_pixel_array[row + 1][col + 1]
+            vertical_strength = 3 * greyscale_pixel_array[row - 1][col - 1] + 10 * greyscale_pixel_array[row - 1][col] + 3 * greyscale_pixel_array[row - 1][col + 1] - 3 * greyscale_pixel_array[row + 1][col - 1] - 10 * greyscale_pixel_array[row + 1][col] - 3 * greyscale_pixel_array[row + 1][col + 1]
+            
+            horizontal_strength = horizontal_strength / 32
+            vertical_strength = vertical_strength / 32            
+            edge_strength = abs(horizontal_strength) + abs(vertical_strength)
+            edge_strength = max(0, min(255, edge_strength))  # Ensure edge_strength is between 0 and 255
+            edge_strength_array[row][col] = edge_strength
+    
+    return edge_strength_array
 
 
 
@@ -189,6 +201,9 @@ def main(input_path, output_path):
                
                
     outputArray = contrastStretching(iniGreyscaleArray, image_width, image_height)
+    
+    outputArray = edgeDetection(outputArray, image_width, image_height)
+
     
         
     ############################################
