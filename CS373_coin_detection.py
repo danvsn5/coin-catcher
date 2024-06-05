@@ -204,6 +204,47 @@ def thresholding(greyscale_pixel_array, image_width, image_height):
     
     return binary_pixel_array
 
+# ———————————————————————————————————— Dilations and Erosions ———————————————————————————————————— #
+def erosionOnArray(binary_pixel_array, image_width, image_height):
+    # implement with sliding window
+    # create a new binary image with the eroded pixel values
+    eroded_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    kernal = [[0, 0, 1, 0, 0], [0, 1, 1, 1, 0], [1, 1, 1, 1, 1], [0, 1, 1, 1, 0], [0, 0, 1, 0, 0]]
+
+    # binary pixel array is the input binary image given in either 0 or 255
+    for row in range(2, image_height - 2):
+        for col in range(2, image_width - 2):
+            eroded_pixel_array[row][col] = 255
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if kernal[i + 2][j + 2] == 1:
+                        if binary_pixel_array[row + i][col + j] == 0:
+                            eroded_pixel_array[row][col] = 0
+                            break
+                        
+    return eroded_pixel_array
+
+def dilationOnArray(binary_pixel_array, image_width, image_height):
+    # implement with sliding window
+    # create a new binary image with the dilated pixel values
+    dilated_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    kernal = [[0, 0, 1, 0, 0], [0, 1, 1, 1, 0], [1, 1, 1, 1, 1], [0, 1, 1, 1, 0], [0, 0, 1, 0, 0]]
+
+    # binary pixel array is the input binary image given in either 0 or 255
+    for row in range(2, image_height - 2):
+        for col in range(2, image_width - 2):
+            dilated_pixel_array[row][col] = 0
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    if kernal[i + 2][j + 2] == 1:
+                        if binary_pixel_array[row + i][col + j] == 255:
+                            dilated_pixel_array[row][col] = 255
+                            break
+                        
+    return dilated_pixel_array
+
 
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
@@ -235,6 +276,22 @@ def main(input_path, output_path):
     
     outputArray = thresholding(outputArray, image_width, image_height)
 
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+    outputArray = dilationOnArray(outputArray, image_width, image_height)
+
+    
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
+    outputArray = erosionOnArray(outputArray, image_width, image_height)
     
         
     ############################################
