@@ -301,12 +301,26 @@ def connectedComponentAnalysis(binary_pixel_array, image_width, image_height):
     
     return bounding_box_list
 
+def findCoinValue(height):
+    
+    if (height >= 268 * 0.97 and height <= 268 * 1.03):
+        return "$2"
+    elif (height >= 231 * 0.97 and height <= 231 * 1.03):
+        return "$1"
+    elif (height >= 251 * 0.97 and height <= 251 * 1.03):
+        return "50c"
+    elif (height >= 215 * 0.97 and height <= 215 * 1.03):
+        return "20c"
+    elif (height >= 204 * 0.97 and height <= 204 * 1.03):
+        return "10c"
+    
+    return ""
 
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
     # This is the default input image, you may change the 'image_name' variable to test other images.
-    image_name = 'hard_case_1'
-    input_filename = f'./Images/hard/{image_name}.png'
+    image_name = 'easy_case_6'
+    input_filename = f'./Images/easy/{image_name}.png'
     if TEST_MODE:
         input_filename = input_path
 
@@ -387,7 +401,15 @@ def main(input_path, output_path):
                 coinCount = coinCount + 1
                 rect = Rectangle(bbox_xy, bbox_width, bbox_height, linewidth=2, edgecolor='r', facecolor='none')
                 axs.add_patch(rect)
-                print(coinCount)
+ 
+                #print(coinCount)
+                x_center = bbox_xy[0] + bbox_width / 2
+                y_center = bbox_xy[1] + bbox_height / 2
+                print(bbox_height)
+                print(findCoinValue(bbox_height))
+                axs.annotate(findCoinValue(bbox_height), (x_center, y_center), color='w', weight='bold', 
+                fontsize=18, ha='center', va='center')
+                print(str(coinCount) + " the coin is width x height   " + str(bbox_width) + "   " + str(bbox_height))
         
         
     if(coinCount == 1):
