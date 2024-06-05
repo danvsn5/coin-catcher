@@ -245,11 +245,60 @@ def dilationOnArray(binary_pixel_array, image_width, image_height):
                         
     return dilated_pixel_array
 
+# ———————————————————————————————————— Box Sizing and Grouping ——————————————————————————————————— #
+def bfs(pixel_array, visited, row, col, image_width, image_height):
+    queue = [(row, col)]
+    visited[row][col] = True
+    min_x = image_width
+    min_y = image_height
+    max_x = 0
+    max_y = 0
+    
+    while queue:
+        r, c = queue.pop(0)
+        min_x = min(min_x, c)
+        min_y = min(min_y, r)
+        max_x = max(max_x, c)
+        max_y = max(max_y, r)
+        
+        # Check neighbors
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                nr = r + dr
+                nc = c + dc
+                
+                # Skip if out of bounds or already visited
+                if nr < 0 or nr >= image_height or nc < 0 or nc >= image_width or visited[nr][nc]:
+                    continue
+                
+                # Skip if not part of the connected component
+                if pixel_array[nr][nc] != 255:
+                    continue
+                
+                # Mark as visited and add to queue
+                visited[nr][nc] = True
+                queue.append((nr, nc))
+    
+    return (min_x, min_y, max_x, max_y)
+
+
+def connectedComponentAnalysis(binary_pixel_array, image_width, image_height):
+    bounding_box_list = []
+    visited = [[False] * image_width for _ in range(image_height)]
+    
+    for row in range(image_height):
+        for col in range(image_width):
+            if not visited[row][col] and binary_pixel_array[row][col] == 255:
+                bounding_box = bfs(binary_pixel_array, visited, row, col, image_width, image_height)
+                bounding_box_list.append(bounding_box)
+    
+    return bounding_box_list
+
 
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
     # This is the default input image, you may change the 'image_name' variable to test other images.
-    image_name = 'easy_case_1'
+    image_name = 'easy_case_6'
     input_filename = f'./Images/easy/{image_name}.png'
     if TEST_MODE:
         input_filename = input_path
@@ -293,6 +342,9 @@ def main(input_path, output_path):
     outputArray = erosionOnArray(outputArray, image_width, image_height)
     outputArray = erosionOnArray(outputArray, image_width, image_height)
     
+    bounding_box_list = connectedComponentAnalysis(outputArray, image_width, image_height)
+
+    
         
     ############################################
     ### Bounding box coordinates information ###
@@ -302,8 +354,9 @@ def main(input_path, output_path):
     ### bounding_box[3] = max y
     ############################################
     
-    bounding_box_list = [[150, 140, 200, 190]]  # This is a dummy bounding box list, please comment it out when testing your own code.
     px_array = outputArray
+    px_array = pyplot.imread(input_filename)
+
     
     fig, axs = pyplot.subplots(1, 1)
     axs.imshow(px_array, aspect='equal')
