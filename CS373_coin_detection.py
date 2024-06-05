@@ -177,7 +177,32 @@ def edgeDetection(greyscale_pixel_array, image_width, image_height):
     
     return edge_strength_array
 
+# ——————————————————————————————————— Blurring and Thresholding —————————————————————————————————— #
+def meanFilter(greyscale_pixel_array, image_width, image_height):
+    mean_filter_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    for row in range(2, image_height - 2):
+        for col in range(2, image_width - 2):
+            mean_filter = 1/25 * (greyscale_pixel_array[row - 2][col - 2] + greyscale_pixel_array[row - 2][col - 1] + greyscale_pixel_array[row - 2][col] + greyscale_pixel_array[row - 2][col + 1] + greyscale_pixel_array[row - 2][col + 2] + greyscale_pixel_array[row - 1][col - 2] + greyscale_pixel_array[row - 1][col - 1] + greyscale_pixel_array[row - 1][col] + greyscale_pixel_array[row - 1][col + 1] + greyscale_pixel_array[row - 1][col + 2] + greyscale_pixel_array[row][col - 2] + greyscale_pixel_array[row][col - 1] + greyscale_pixel_array[row][col] + greyscale_pixel_array[row][col + 1] + greyscale_pixel_array[row][col + 2] + greyscale_pixel_array[row + 1][col - 2] + greyscale_pixel_array[row + 1][col - 1] + greyscale_pixel_array[row + 1][col] + greyscale_pixel_array[row + 1][col + 1] + greyscale_pixel_array[row + 1][col + 2] + greyscale_pixel_array[row + 2][col - 2] + greyscale_pixel_array[row + 2][col - 1] + greyscale_pixel_array[row + 2][col] + greyscale_pixel_array[row + 2][col + 1] + greyscale_pixel_array[row + 2][col + 2])
+            mean_filter_array[row][col] = mean_filter
+    
+    return mean_filter_array
 
+# perform thresholding on the input greyscale image to create a binary image
+# the threshold value should be set to 22
+def thresholding(greyscale_pixel_array, image_width, image_height):
+    threshold_value = 22
+    binary_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
+    
+    for row in range(image_height):
+        for col in range(image_width):
+            pixel_value = greyscale_pixel_array[row][col]
+            if pixel_value < threshold_value:
+                binary_pixel_array[row][col] = 0
+            else:
+                binary_pixel_array[row][col] = 255
+    
+    return binary_pixel_array
 
 
 # This is our code skeleton that performs the coin detection.
@@ -203,6 +228,12 @@ def main(input_path, output_path):
     outputArray = contrastStretching(iniGreyscaleArray, image_width, image_height)
     
     outputArray = edgeDetection(outputArray, image_width, image_height)
+    
+    outputArray = meanFilter(outputArray, image_width, image_height)
+    outputArray = meanFilter(outputArray, image_width, image_height)
+    outputArray = meanFilter(outputArray, image_width, image_height)
+    
+    outputArray = thresholding(outputArray, image_width, image_height)
 
     
         
