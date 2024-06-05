@@ -6,7 +6,7 @@ import sys
 # assignment.
 from matplotlib import pyplot
 from matplotlib.patches import Rectangle
-
+import matplotlib
 # import our basic, light-weight png reader library
 import imageIO.png
 
@@ -361,6 +361,8 @@ def main(input_path, output_path):
     fig, axs = pyplot.subplots(1, 1)
     axs.imshow(px_array, aspect='equal')
     
+    coinCount = 0
+    
     # Loop through all bounding boxes
     for bounding_box in bounding_box_list:
         bbox_min_x = bounding_box[0]
@@ -371,16 +373,23 @@ def main(input_path, output_path):
         bbox_xy = (bbox_min_x, bbox_min_y)
         bbox_width = bbox_max_x - bbox_min_x
         bbox_height = bbox_max_y - bbox_min_y
-        
-        print(bbox_width)
-        print(bbox_height)
-        
+                
         if(bbox_width > 0.95 * bbox_height and bbox_width < 1.05 * bbox_height):
             
             if(bbox_height > 100):
+                coinCount = coinCount + 1
                 rect = Rectangle(bbox_xy, bbox_width, bbox_height, linewidth=2, edgecolor='r', facecolor='none')
                 axs.add_patch(rect)
+                print(coinCount)
         
+        
+    if(coinCount == 1):
+        matplotlib.pyplot.text(1, 1, "There is: " + str(coinCount) + " coin in this picture")
+    else:
+        matplotlib.pyplot.text(1, 1, "There are: " + str(coinCount) + " coins in this picture")
+
+        
+    
     pyplot.axis('off')
     pyplot.tight_layout()
     default_output_path = f'./output_images/{image_name}_with_bbox.png'
