@@ -191,7 +191,7 @@ def meanFilter(greyscale_pixel_array, image_width, image_height):
 # perform thresholding on the input greyscale image to create a binary image
 # the threshold value should be set to 22
 def thresholding(greyscale_pixel_array, image_width, image_height):
-    threshold_value = 22
+    threshold_value = 26
     binary_pixel_array = createInitializedGreyscalePixelArray(image_width, image_height)
     
     for row in range(image_height):
@@ -298,8 +298,8 @@ def connectedComponentAnalysis(binary_pixel_array, image_width, image_height):
 # This is our code skeleton that performs the coin detection.
 def main(input_path, output_path):
     # This is the default input image, you may change the 'image_name' variable to test other images.
-    image_name = 'easy_case_6'
-    input_filename = f'./Images/easy/{image_name}.png'
+    image_name = 'hard_case_2'
+    input_filename = f'./Images/hard/{image_name}.png'
     if TEST_MODE:
         input_filename = input_path
 
